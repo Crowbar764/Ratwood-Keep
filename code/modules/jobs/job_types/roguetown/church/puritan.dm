@@ -28,16 +28,17 @@
 
 /datum/outfit/job/roguetown/puritan/pre_equip(mob/living/carbon/human/H)
 	..()
-	shirt = /obj/item/clothing/suit/roguetown/shirt/undershirt/puritan
+	shirt = /obj/item/clothing/suit/roguetown/shirt/grenzelhoft
 	belt = /obj/item/storage/belt/rogue/leather
 	neck = /obj/item/clothing/neck/roguetown/psicross/silver
-	shoes = /obj/item/clothing/shoes/roguetown/armor
+	shoes = /obj/item/clothing/shoes/roguetown/armor/inqboots
 	pants = /obj/item/clothing/under/roguetown/tights/black
 	cloak = /obj/item/clothing/cloak/cape/puritan
 	beltr = /obj/item/gun/ballistic/revolver/grenadelauncher/runelock
 	beltl = /obj/item/storage/belt/rogue/pouch/ammo
-	head = /obj/item/clothing/head/roguetown/puritan
-	gloves = /obj/item/clothing/gloves/roguetown/leather
+	head = /obj/item/clothing/head/roguetown/inqhat
+	gloves = /obj/item/clothing/gloves/roguetown/inqgloves
+	armor = /obj/item/clothing/suit/roguetown/armor/plate/scale/inqcoat
 	backr = /obj/item/rogueweapon/sword/rapier
 	backl = /obj/item/storage/backpack/rogue/satchel
 	backpack_contents = list(/obj/item/storage/keyring/puritan = 1, /obj/item/rogueweapon/huntingknife/idagger/silver, /obj/item/lockpick = 1)

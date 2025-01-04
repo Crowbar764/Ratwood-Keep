@@ -217,6 +217,7 @@
 	after_ejaculation()
 
 /datum/sex_controller/proc/after_ejaculation()
+	user.add_stress(/datum/stressevent/cumok)
 	set_arousal(40)
 	adjust_charge(-CHARGE_FOR_CLIMAX)
 	user.emote("sexmoanhvy", forced = TRUE)
@@ -225,6 +226,8 @@
 	if(HAS_TRAIT(user, TRAIT_BAOTHA_CURSE))
 		user.apply_status_effect(/datum/status_effect/debuff/cumbrained)
 	SSticker.cums++
+	cuckold_check()
+
 
 /datum/sex_controller/proc/after_milking()
 	set_arousal(80)
@@ -234,17 +237,21 @@
 
 /datum/sex_controller/proc/after_intimate_climax()
 	if(user == target)
+		if(HAS_TRAIT(target, TRAIT_GOODLOVER))
+			user.add_stress(/datum/stressevent/cumgood)
 		return
 	if(HAS_TRAIT(target, TRAIT_GOODLOVER))
 		if(!user.mob_timers["cumtri"])
 			user.mob_timers["cumtri"] = world.time
 			user.adjust_triumphs(1)
 			to_chat(user, span_love("Our loving is a true TRIUMPH!"))
+			user.add_stress(/datum/stressevent/cumgood)
 	if(HAS_TRAIT(user, TRAIT_GOODLOVER))
 		if(!target.mob_timers["cumtri"])
 			target.mob_timers["cumtri"] = world.time
 			target.adjust_triumphs(1)
 			to_chat(target, span_love("Our loving is a true TRIUMPH!"))
+			user.add_stress(/datum/stressevent/cumgood)
 
 /datum/sex_controller/proc/just_ejaculated()
 	return (last_ejaculation_time + 2 SECONDS >= world.time)
@@ -763,3 +770,22 @@
 			return "<span class='love_high'>[string]</span>"
 		if(SEX_FORCE_EXTREME)
 			return "<span class='love_extreme'>[string]</span>"
+
+/datum/sex_controller/proc/cuckold_check()
+	//First, check if the target has a family.
+	var/datum/family/F = target.getFamily(TRUE)
+	if(!F)
+		return
+
+
+	//Second, check if target has a spouse relation.
+	var/list/rels = F.getRelations(target,REL_TYPE_SPOUSE)
+
+	if(!length(rels))
+		return
+
+	for(var/datum/relation/R in rels) //Loop through all the spouses (Should only be one.)
+		var/mob/living/carbon/human/cuckold = R.target:resolve()
+		if(!cuckold || cuckold == user)
+			continue
+		GLOB.cuckolds |= "[cuckold.job] [cuckold.real_name] (by [user.real_name])"
