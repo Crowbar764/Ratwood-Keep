@@ -44,7 +44,7 @@
 	for(var/datum/mind/MF in get_minds())
 		owner.become_unknown_to(MF)
 	var/mob/living/carbon/human/L = owner.current
-	ADD_TRAIT(L, TRAIT_NOROGSTAM, "[type]")
+	ADD_TRAIT(L, TRAIT_NOSTAMINA, "[type]")
 	ADD_TRAIT(L, TRAIT_NOHUNGER, "[type]")
 	ADD_TRAIT(L, TRAIT_NOBREATH, "[type]")
 	ADD_TRAIT(L, TRAIT_NOPAIN, "[type]")
@@ -60,6 +60,8 @@
 	ADD_TRAIT(L, TRAIT_SEEPRICES, "[type]")
 	ADD_TRAIT(L, TRAIT_CRITICAL_RESISTANCE, "[type]")
 	ADD_TRAIT(L, TRAIT_HEAVYARMOR, "[type]")
+	ADD_TRAIT(L, TRAIT_SPECIALUNDEAD, "[type]") //Prevents necromancers from "reanimating" them to kill them. Any new undead type should have this.
+
 	L.cmode_music = 'sound/music/combat_cult.ogg'
 	L.faction = list("undead")
 	if(L.charflaw)

@@ -94,7 +94,7 @@
 		to_chat(user, span_warning("The life essence was sucked out of this body."))
 		revert_cast()
 		return FALSE
-	if(world.time > target.mob_timers["lastdied"] + 5 MINUTES)
+	if(world.time > target.mob_timers["lastdied"] + 10 MINUTES)
 		to_chat(user, span_warning("It's too late."))
 		revert_cast()
 		return FALSE
@@ -573,7 +573,7 @@
 	M.adjustToxLoss(2, 0)
 
 /datum/reagent/medicine/caffeine/on_mob_life(mob/living/carbon/M)
-	M.rogstam_add(800)
+	M.energy_add(800)
 	..()
 	. = 1
 	if(M.has_status_effect(/datum/status_effect/debuff/sleepytime))
@@ -849,11 +849,10 @@ end recipe count: 8 ash, 8 minced meat, 4 swampweed, 2 poisonberry to make 1 bot
 /obj/item/storage/fancy/pilltin/wake
 	name = "pill tin (wake)"
 
-	populate_contents = list(
-		/obj/item/reagent_containers/pill/caffpill,
-		/obj/item/reagent_containers/pill/caffpill,
-		/obj/item/reagent_containers/pill/caffpill
-	)
+/obj/item/storage/fancy/pilltin/wake/PopulateContents()
+	new /obj/item/reagent_containers/pill/caffpill(src)
+	new /obj/item/reagent_containers/pill/caffpill(src)
+	new /obj/item/reagent_containers/pill/caffpill(src)
 
 /obj/item/storage/fancy/skit
 	name = "surgery kit"
@@ -923,19 +922,16 @@ end recipe count: 8 ash, 8 minced meat, 4 swampweed, 2 poisonberry to make 1 bot
 		/obj/item/needle/pestra
 	))
 
-/obj/item/storage/fancy/skit
-	populate_contents = list(
-		/obj/item/rogueweapon/surgery/scalpel,
-		/obj/item/rogueweapon/surgery/saw,
-		/obj/item/rogueweapon/surgery/hemostat,
-		/obj/item/rogueweapon/surgery/hemostat,
-		/obj/item/rogueweapon/surgery/retractor,
-		/obj/item/rogueweapon/surgery/bonesetter,
-		/obj/item/rogueweapon/surgery/cautery,
-		/obj/item/natural/worms/leech/cheele,
-		/obj/item/needle/pestra
-	)
-
+/obj/item/storage/fancy/skit/PopulateContents()
+	new /obj/item/rogueweapon/surgery/scalpel(src)
+	new /obj/item/rogueweapon/surgery/saw(src)
+	new /obj/item/rogueweapon/surgery/hemostat(src)
+	new /obj/item/rogueweapon/surgery/hemostat(src)
+	new /obj/item/rogueweapon/surgery/retractor(src)
+	new /obj/item/rogueweapon/surgery/bonesetter(src)
+	new /obj/item/rogueweapon/surgery/cautery(src)
+	new /obj/item/natural/worms/leech/cheele(src)
+	new /obj/item/needle/pestra(src)
 
 /obj/item/storage/fancy/ifak
 	name = "personal patch kit"
@@ -946,15 +942,10 @@ end recipe count: 8 ash, 8 minced meat, 4 swampweed, 2 poisonberry to make 1 bot
 	throwforce = 1
 	slot_flags = null
 
-	populate_contents = list(
-		/obj/item/reagent_containers/hypospray/medipen/sealbottle/reju,
-		/obj/item/natural/bundle/cloth/bandage/full,
-		/obj/item/reagent_containers/hypospray/medipen/sty/detox,
-		/obj/item/reagent_containers/pill/pnkpill,
-		/obj/item/candle/yellow,
-		/obj/item/needle,
-		/obj/item/book/rogue/medical_notebook
-	)
+/obj/item/storage/fancy/ifak/PopulateContents()
+	var/datum/component/storage/STR = GetComponent(/datum/component/storage)
+	for(var/i = 1 to STR.max_items)
+		new spawn_type(src)
 
 /obj/item/storage/fancy/ifak/update_icon()
 	if(fancy_open)
@@ -1013,8 +1004,16 @@ end recipe count: 8 ash, 8 minced meat, 4 swampweed, 2 poisonberry to make 1 bot
 		/obj/item/needle,
 		/obj/item/needle/thorn,
 		/obj/item/needle/pestra,
-		/obj/item/book/rogue/medical_notebook
 	))
+
+/obj/item/storage/fancy/ifak/PopulateContents()
+	new /obj/item/reagent_containers/hypospray/medipen/sealbottle/reju(src)
+	new /obj/item/natural/bundle/cloth/bandage/full(src)
+	new /obj/item/reagent_containers/hypospray/medipen/sty/detox(src)
+	new /obj/item/reagent_containers/pill/pnkpill(src)
+	new /obj/item/candle/yellow(src)
+	new /obj/item/needle(src)
+	new /obj/item/book/rogue/medical_notebook(src)
 
 /obj/item/reagent_containers/hypospray/medipen/sealbottle
 	name = "sealed bottle item"
@@ -1358,7 +1357,7 @@ end recipe count: 8 ash, 8 minced meat, 4 swampweed, 2 poisonberry to make 1 bot
 		grinding_started = TRUE // Mark grinding as started
 		to_chat(user, "I start grinding...")
 		if((do_after(user, 25, target = src)) && grinded)
-			if(grinded.mill_result) // This goes first.
+			if(grinded.mill_result && !istype(user.rmb_intent, /datum/rmb_intent/strong)) // This goes first. Strong intent to bypass.
 				new grinded.mill_result(get_turf(src))
 				QDEL_NULL(grinded)
 				icon_state = reagents.total_volume > 0 ? "mortar_full" : "mortar_empty"
@@ -1368,17 +1367,21 @@ end recipe count: 8 ash, 8 minced meat, 4 swampweed, 2 poisonberry to make 1 bot
 				grinded.on_juice()
 				reagents.add_reagent_list(grinded.juice_results)
 				to_chat(user, "I juice [grinded] into a fine liquid.")
-			if(grinded.reagents) // Food and pills.
-				grinded.reagents.trans_to(src, grinded.reagents.total_volume, transfered_by = user)
+			if(grinded.grind_results && !isemptylist(grinded.grind_results))
+				grinded.on_grind()
+				reagents.add_reagent_list(grinded.grind_results)
+				to_chat(user, "I break [grinded] into powder.")
 				QDEL_NULL(grinded)
 				icon_state = reagents.total_volume > 0 ? "mortar_full" : "mortar_empty"
 				grinding_started = FALSE // Reset grinding status
 				return
-			grinded.on_grind()
-			reagents.add_reagent_list(grinded.grind_results)
-			to_chat(user, "I break [grinded] into powder.")
-			QDEL_NULL(grinded)
-			icon_state = reagents.total_volume > 0 ? "mortar_full" : "mortar_empty"
+			if(grinded.reagents) // Other stuff that might have reagents in them, let's not cause a runtime shall we?
+				grinded.reagents.trans_to(src, grinded.reagents.total_volume, transfered_by = user)
+				icon_state = reagents.total_volume > 0 ? "mortar_full" : "mortar_empty"
+				to_chat(user, "I pound [grinded] into mush.")
+				QDEL_NULL(grinded)
+				grinding_started = FALSE // Reset grinding status
+				return
 			grinding_started = FALSE // Reset grinding status
 			return
 		else

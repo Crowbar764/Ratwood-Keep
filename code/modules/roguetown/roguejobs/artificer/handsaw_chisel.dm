@@ -2,7 +2,7 @@
 //................	Handsaw	............... //
 /obj/item/rogueweapon/handsaw
 	force = 5
-	possible_item_intents = list(/datum/intent/mace/strike/shovel)
+	possible_item_intents = list(/datum/intent/dagger/cut, /datum/intent/dagger/chop/cleaver)
 	gripped_intents = null
 	name = "handsaw"
 	desc = "Iron tool for woodworking."
@@ -14,17 +14,16 @@
 	righthand_file = 'icons/roguetown/onmob/righthand.dmi'
 	experimental_inhand = FALSE
 	experimental_onhip = FALSE
-	grid_width = 32
-	grid_height = 96
 	sharpness = IS_SHARP
 	wdefense = 0
 	wlength = WLENGTH_LONG
 	w_class = WEIGHT_CLASS_NORMAL
 	slot_flags = ITEM_SLOT_HIP
+	tool_behaviour = TOOL_IMPROVSAW
 	swingsound = list('sound/combat/wooshes/blunt/shovel_swing.ogg','sound/combat/wooshes/blunt/shovel_swing2.ogg')
 	drop_sound = 'sound/foley/dropsound/shovel_drop.ogg'
 	smeltresult = /obj/item/ingot/iron
-	associated_skill = /datum/skill/combat/maces
+	associated_skill = /datum/skill/combat/knives
 	max_blade_int = 50
 
 //................	Chisel	............... //
@@ -37,8 +36,6 @@
 	righthand_file = 'icons/roguetown/onmob/righthand.dmi'
 	experimental_inhand = FALSE
 	experimental_onhip = FALSE
-	grid_width = 32
-	grid_height = 64
 	force = 10
 	throwforce = 2
 	possible_item_intents = list(/datum/intent/stab)
@@ -51,7 +48,7 @@
 	slot_flags = ITEM_SLOT_HIP
 	swingsound = list('sound/combat/wooshes/blunt/shovel_swing.ogg','sound/combat/wooshes/blunt/shovel_swing2.ogg')
 	drop_sound = 'sound/foley/dropsound/shovel_drop.ogg'
-	associated_skill = /datum/skill/combat/maces
+	associated_skill = /datum/skill/combat/knives
 	max_blade_int = 50
 	dropshrink = 0.9
 
@@ -106,8 +103,6 @@
 /obj/item/rogueweapon/chisel/assembly	// template
 	name = "chisel set"
 	desc = "Ready to shape stones when held in a steady grip. Can be separated easily."
-	grid_width = 64
-	grid_height = 64
 	possible_item_intents = list(/datum/intent/hit)
 	gripped_intents =  list(/datum/intent/chisel)
 

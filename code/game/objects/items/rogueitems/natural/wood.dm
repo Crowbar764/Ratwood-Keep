@@ -25,7 +25,7 @@
 	user.changeNext_move(CLICK_CD_MELEE)
 	var/skill_level = user.mind.get_skill_level(/datum/skill/labor/lumberjacking)
 	var/planking_time = (40 - (skill_level * 5))
-	if(istype(I, /obj/item/rogueweapon/handsaw))
+	if(lumber_amount && I.tool_behaviour == TOOL_SAW || I.tool_behaviour == TOOL_IMPROVSAW)
 		playsound(get_turf(src.loc), 'sound/foley/sawing.ogg', 100)
 		user.visible_message("<span class='notice'>[user] starts sawing [src] to smaller pieces.</span>")
 		if(do_after(user, planking_time))
@@ -69,8 +69,6 @@
 	name = "small log"
 	desc = "Piece of lumber cut from a larger log. Suitable for building."
 	icon_state = "logsmall"
-	grid_width = 64
-	grid_height = 96
 	max_integrity = 30
 	static_debris = list(/obj/item/grown/log/tree/stick = 3)
 	firefuel = 20 MINUTES
@@ -80,13 +78,15 @@
 	smeltresult = /obj/item/rogueore/coal
 	lumber_amount = 0
 	metalizer_result = /obj/item/rogueore/copper
+
+
 /obj/item/grown/log/tree/small/attackby(obj/item/I, mob/living/user, params)
 	if(item_flags & IN_STORAGE)
 		return
 	user.changeNext_move(CLICK_CD_MELEE)
-	var/skill_level = user.mind.get_skill_level(/datum/skill/labor/lumberjacking)
+	var/skill_level = user.mind.get_skill_level(/datum/skill/craft/carpentry)
 	var/planking_time = (45 - (skill_level * 5))
-	if(istype(I, /obj/item/rogueweapon/handsaw))
+	if(I.tool_behaviour == TOOL_SAW || I.tool_behaviour == TOOL_IMPROVSAW)
 		playsound(get_turf(src.loc), 'sound/foley/sawing.ogg', 100)
 		user.visible_message("<span class='notice'>[user] starts sawing planks from [src].</span>")
 		if(do_after(user, planking_time))
@@ -142,9 +142,6 @@
 	lumber_amount = 0
 	metalizer_result = /obj/item/needle
 
-	grid_height = 64
-	grid_width = 32
-
 /obj/item/grown/log/tree/stick/Crossed(mob/living/L)
 	. = ..()
 	if(istype(L))
@@ -185,14 +182,13 @@
 				stackcount--
 			else if(stackcount >= 2)
 				var/obj/item/natural/bundle/stick/B = new(get_turf(user))
-				B.amount = clamp(stackcount, 2, 4)
+				B.amount = clamp(stackcount, 2, 6)
 				B.update_bundle()
-				stackcount -= clamp(stackcount, 2, 4)
+				stackcount -= clamp(stackcount, 2, 6)
 				user.put_in_hands(B)
 		for(var/obj/item/grown/log/tree/stick/F in get_turf(src))
 			playsound(get_turf(user.loc), 'sound/foley/dropsound/wooden_drop.ogg', 100)
 			qdel(F)
-
 
 /obj/item/grown/log/tree/stick/attackby(obj/item/I, mob/living/user, params)
 	var/mob/living/carbon/human/H = user
@@ -226,8 +222,6 @@
 /obj/item/grown/log/tree/stake
 	name = "stake"
 	icon_state = "stake"
-	grid_width = 32
-	grid_height = 64
 	desc = "A sharpened piece of wood, fantastic for piercing"
 	force = 10
 	throwforce = 5
@@ -243,6 +237,8 @@
 	lumber_amount = 0
 	metalizer_result = /obj/item/ammo_casing/caseless/rogue/arrow/iron
 
+/obj/item/grown/log/tree/stake/attackby(obj/item/I, mob/user, params)
+	return
 
 //................	Wooden planks	............... //
 /obj/item/natural/wood/plank
@@ -253,8 +249,6 @@
 	lefthand_file = 'icons/roguetown/onmob/lefthand.dmi'
 	righthand_file = 'icons/roguetown/onmob/righthand.dmi'
 	experimental_inhand = FALSE
-	grid_width = 64
-	grid_height = 224
 	attacked_sound = 'sound/misc/woodhit.ogg'
 	drop_sound = 'sound/foley/dropsound/wooden_drop.ogg'
 	possible_item_intents = list(/datum/intent/use)
@@ -301,8 +295,6 @@
 	lefthand_file = 'icons/roguetown/onmob/lefthand.dmi'
 	righthand_file = 'icons/roguetown/onmob/righthand.dmi'
 	experimental_inhand = FALSE
-	grid_width = 128
-	grid_height = 224
 	drop_sound = 'sound/foley/dropsound/wooden_drop.ogg'
 	possible_item_intents = list(/datum/intent/use)
 	force = 0
